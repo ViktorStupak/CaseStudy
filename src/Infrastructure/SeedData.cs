@@ -1,17 +1,23 @@
 ﻿using System;
 using System.Linq;
+using CaseStudy.WebApi.Models;
 
-namespace CaseStudy.WebApi.Models
+namespace CaseStudy.WebApi.Infrastructure
 {
+    /// <summary>
+    /// Class for initialize DB.
+    /// </summary>
     public static class SeedData
     {
-
+        /// <summary>
+        /// Seeds the database's values.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <exception cref="ArgumentNullException">context</exception>
         public static void SeedDatabase(DataContext context)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            //context.Database.EnsureDeleted();
-            context.Database.EnsureCreated();
             if (context.Products.Any()) return;
             for (int i = 0; i < 100; i++)
             {

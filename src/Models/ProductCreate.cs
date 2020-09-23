@@ -7,7 +7,7 @@ namespace CaseStudy.WebApi.Models
     /// <summary>
     /// DTO object for creating new instance.
     /// </summary>
-    public class ProductCreate
+    public class ProductCreate : ProductDescription
     {
         /// <summary>
         /// The name of the product
@@ -27,16 +27,6 @@ namespace CaseStudy.WebApi.Models
         public Uri ImgUri { get; set; }
 
         /// <summary>
-        /// Get or set the description.
-        /// </summary>
-        /// <value>
-        /// The description.
-        /// </value>
-        /// <example>Description of the product</example>
-        [Required]
-        public string Description { get; set; }
-
-        /// <summary>
         /// Quantity left in stock
         /// </summary>
         /// <example>10</example>
@@ -47,7 +37,7 @@ namespace CaseStudy.WebApi.Models
         /// <summary>
         /// Converts to <see cref="Product"/>.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>new instance of the <see cref="Product"/></returns>
         public Product ToProduct() => new Product
         {
             Name = this.Name,

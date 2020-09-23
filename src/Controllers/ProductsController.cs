@@ -1,23 +1,30 @@
-﻿using CaseStudy.WebApi.Models;
+﻿using CaseStudy.WebApi.Infrastructure;
+using CaseStudy.WebApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace CaseStudy.WebApi.Controllers
 {
+    /// <summary>
+    /// Providing all available products of an eshop and enabling the partial update of one product
+    /// </summary>
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly DataContext _context;
+        private readonly IRepository _repository;
 
-        public ProductsController(DataContext context)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProductsController"/> class.
+        /// </summary>
+        /// <param name="repository">The repository.</param>
+        public ProductsController(IRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         /// <summary>
@@ -29,7 +36,7 @@ namespace CaseStudy.WebApi.Controllers
         [HttpGet]
         public IAsyncEnumerable<Product> GetProducts()
         {
-            return (IAsyncEnumerable<Product>)_context.Products.AsNoTracking();
+            return this._repository.GetProducts();
         }
 
         /// <summary>
@@ -42,11 +49,9 @@ namespace CaseStudy.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ApiExplorerSettings(GroupName = "v2")]
         [HttpGet("{pageIndex}/{pageSize}")]
-        public async Task<IActionResult> GetProducts(int pageIndex, int pageSize = 10)
+        public IActionResult GetProducts(int pageIndex, int pageSize = 10)
         {
-            var result = await PaginatedList<Product>.CreateAsync(_context.Products.AsNoTracking(), pageIndex, pageSize)
-                .ConfigureAwait(false);
-            return this.Ok(result);
+            return this.Ok(this._repository.GetPaginatedProducts(pageIndex, pageSize));
         }
 
         /// <summary>
@@ -61,7 +66,7 @@ namespace CaseStudy.WebApi.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProduct(long id)
         {
-            var product = await _context.Products.FindAsync(id).ConfigureAwait(false);
+            var product = await this._repository.GetProduct(id).ConfigureAwait(false);
 
             if (product == null)
             {
@@ -87,23 +92,7 @@ namespace CaseStudy.WebApi.Controllers
         {
             if (product == null) return BadRequest();
 
-            _context.Entry(product).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync().ConfigureAwait(false);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProductExists(product.Id))
-                {
-                    return NotFound();
-                }
-
-                throw;
-            }
-
-            return NoContent();
+            return await this._repository.PutProduct(product).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -119,30 +108,12 @@ namespace CaseStudy.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpPut("description/{id}")]
-        public async Task<IActionResult> PutDescription(long id, string description)
+        public async Task<IActionResult> PutDescription(long id, [FromBody] ProductDescription description)
         {
-            if (string.IsNullOrWhiteSpace(description)) return BadRequest($"value of the description is empty");
+            if (description == null) throw new ArgumentNullException(nameof(description));
+            if (string.IsNullOrWhiteSpace(description.Description)) return BadRequest("value of the description is empty");
 
-            var product = await _context.Products.FindAsync(id).ConfigureAwait(false);
-            product.Description = description;
-
-            _context.Entry(product).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync().ConfigureAwait(false);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProductExists(id))
-                {
-                    return NotFound();
-                }
-
-                throw;
-            }
-
-            return NoContent();
+            return await this._repository.PutDescription(id, description.Description).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -172,16 +143,11 @@ namespace CaseStudy.WebApi.Controllers
         {
             if (product == null) return BadRequest();
 
-            var productDb = product.ToProduct();
-            await _context.Products.AddAsync(productDb).ConfigureAwait(false);
-            await _context.SaveChangesAsync().ConfigureAwait(false);
+            var productDb = await this._repository.PostProduct(product).ConfigureAwait(false);
 
             return CreatedAtAction("GetProduct", new { id = productDb.Id }, productDb);
         }
 
-        private bool ProductExists(long id)
-        {
-            return _context.Products.Any(e => e.Id == id);
-        }
+
     }
 }
