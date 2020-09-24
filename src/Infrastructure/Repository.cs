@@ -1,8 +1,10 @@
 ﻿using CaseStudy.WebApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CaseStudy.WebApi.Infrastructure
@@ -22,6 +24,7 @@ namespace CaseStudy.WebApi.Infrastructure
         public Repository(DataContext context)
         {
             this._context = context;
+            Log.Debug("create repository");
         }
 
         /// <summary>
@@ -30,9 +33,9 @@ namespace CaseStudy.WebApi.Infrastructure
         /// <param name="pageIndex">Index of the page.</param>
         /// <param name="pageSize">Size of the page.</param>
         /// <returns>List of the products for 1 page (length is pageSize, skip (pageIndex - 1) * pageSize)</returns>
-        public PaginatedList<Product> GetPaginatedProducts(int pageIndex, int pageSize = 10)
+        public IAsyncEnumerable<Product> GetPaginatedProducts(int pageIndex, int pageSize = 10)
         {
-            return PaginatedList<Product>.CreateInstance(_context.Products.AsNoTracking(), pageIndex, pageSize);
+            return _context.Products.AsNoTracking().Skip((pageIndex - 1) * pageSize).Take(pageSize).AsAsyncEnumerable();
         }
 
         /// <summary>
@@ -133,7 +136,7 @@ namespace CaseStudy.WebApi.Infrastructure
         /// <returns></returns>
         public async Task<bool> ProductExists(long id)
         {
-            return await _context.Products.AnyAsync(e => e.Id == id).ConfigureAwait(false);
+            return await _context.Products.AsNoTracking().AnyAsync(e => e.Id == id).ConfigureAwait(false);
         }
     }
 }

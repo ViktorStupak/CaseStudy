@@ -6,7 +6,7 @@ using Xunit;
 
 namespace CaseStudy.Test.IntegrationTests
 {
-    public class TestControllerTests : IClassFixture<WebApplicationFactory<Startup>>
+    public class TestControllerTests : IClassFixture<WebApplicationFactory<Startup>>, IDisposable
     {
         private readonly WebApplicationFactory<Startup> _factory;
 
@@ -30,6 +30,26 @@ namespace CaseStudy.Test.IntegrationTests
 
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
+        }
+
+        protected bool IsDisposed { get; set; }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (IsDisposed) return;
+
+            if (!disposing)
+            {
+                this._factory.Dispose();
+            }
+
+            IsDisposed = true;
         }
     }
 }

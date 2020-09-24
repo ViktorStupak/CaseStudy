@@ -16,7 +16,7 @@ namespace CaseStudy.WebApi.Infrastructure
         /// <param name="pageIndex">Index of the page.</param>
         /// <param name="pageSize">Size of the page.</param>
         /// <returns></returns>
-        public PaginatedList<Product> GetPaginatedProducts(int pageIndex, int pageSize = 10);
+        public IAsyncEnumerable<Product> GetPaginatedProducts(int pageIndex, int pageSize = 10);
 
         /// <summary>
         /// Get the all products.

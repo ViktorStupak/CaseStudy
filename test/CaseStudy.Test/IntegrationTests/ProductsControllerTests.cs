@@ -11,7 +11,7 @@ using Xunit;
 
 namespace CaseStudy.Test.IntegrationTests
 {
-    public class ProductsControllerTests : IClassFixture<WebApplicationFactory<Startup>>
+    public class ProductsControllerTests : IClassFixture<WebApplicationFactory<Startup>>, IDisposable
     {
         private readonly WebApplicationFactory<Startup> _factory;
 
@@ -47,7 +47,7 @@ namespace CaseStudy.Test.IntegrationTests
             client.BaseAddress = new Uri("https://localhost:5001");
 
             // Act
-            var response = await client.GetAsync(new Uri("/api/Products/1/10", UriKind.Relative)).ConfigureAwait(false);
+            var response = await client.GetAsync(new Uri("/api/Products/5/10", UriKind.Relative)).ConfigureAwait(false);
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
             var stringResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -152,6 +152,26 @@ namespace CaseStudy.Test.IntegrationTests
             var stringResponseAll = await responseAll.Content.ReadAsStringAsync().ConfigureAwait(false);
             var productAll = JsonConvert.DeserializeObject<Product>(stringResponseAll);
             Assert.Equal("Description newe", productAll.Description, true);
+        }
+
+        protected bool IsDisposed { get; set; }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (IsDisposed) return;
+
+            if (!disposing)
+            {
+                this._factory.Dispose();
+            }
+
+            IsDisposed = true;
         }
     }
 }

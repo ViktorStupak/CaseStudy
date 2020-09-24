@@ -2,6 +2,8 @@
 using CaseStudy.WebApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
+using Serilog.Context;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -36,6 +38,7 @@ namespace CaseStudy.WebApi.Controllers
         [HttpGet]
         public IAsyncEnumerable<Product> GetProducts()
         {
+            Log.Debug("start process All Product");
             return this._repository.GetProducts();
         }
 
@@ -49,9 +52,10 @@ namespace CaseStudy.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ApiExplorerSettings(GroupName = "v2")]
         [HttpGet("{pageIndex}/{pageSize}")]
-        public IActionResult GetProducts(int pageIndex, int pageSize = 10)
+        public IAsyncEnumerable<Product> GetProducts(int pageIndex, int pageSize = 10)
         {
-            return this.Ok(this._repository.GetPaginatedProducts(pageIndex, pageSize));
+            Log.Debug($"start process All paginated products. page index: {pageIndex}; pagesize: {pageSize}");
+            return this._repository.GetPaginatedProducts(pageIndex, pageSize);
         }
 
         /// <summary>
@@ -66,14 +70,20 @@ namespace CaseStudy.WebApi.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProduct(long id)
         {
-            var product = await this._repository.GetProduct(id).ConfigureAwait(false);
-
-            if (product == null)
+            using (LogContext.PushProperty("ProductID", $"id: {id}"))
             {
+                Log.Debug("start process get product.");
+                var product = await this._repository.GetProduct(id).ConfigureAwait(false);
+                Log.Debug("find product {@Product}", product);
+                if (product != null)
+                {
+                    return this.Ok(product);
+                }
+                Log.Error("product not found");
                 return NotFound();
+
             }
 
-            return this.Ok(product);
         }
 
         /// <summary>
@@ -91,8 +101,12 @@ namespace CaseStudy.WebApi.Controllers
         public async Task<IActionResult> PutProduct(Product product)
         {
             if (product == null) return BadRequest();
+            using (LogContext.PushProperty("ProductID", $"id: {product.Id}"))
+            {
+                Log.Debug("receive product {@Product}", product);
+                return await this._repository.PutProduct(product).ConfigureAwait(false);
 
-            return await this._repository.PutProduct(product).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -112,8 +126,12 @@ namespace CaseStudy.WebApi.Controllers
         {
             if (description == null) throw new ArgumentNullException(nameof(description));
             if (string.IsNullOrWhiteSpace(description.Description)) return BadRequest("value of the description is empty");
+            using (LogContext.PushProperty("ProductID", $"id: {id}"))
+            {
 
-            return await this._repository.PutDescription(id, description.Description).ConfigureAwait(false);
+                Log.Debug("receive description {@Description}", description);
+                return await this._repository.PutDescription(id, description.Description).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -142,10 +160,13 @@ namespace CaseStudy.WebApi.Controllers
         public async Task<IActionResult> PostProduct(ProductCreate product)
         {
             if (product == null) return BadRequest();
-
+            Log.Debug("receive product {@Product}", product);
             var productDb = await this._repository.PostProduct(product).ConfigureAwait(false);
-
-            return CreatedAtAction("GetProduct", new { id = productDb.Id }, productDb);
+            using (LogContext.PushProperty("ProductID", $"id: {productDb.Id}"))
+            {
+                Log.Debug("create product {@Product}", productDb);
+                return CreatedAtAction("GetProduct", new { id = productDb.Id }, productDb);
+            }
         }
 
 

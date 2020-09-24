@@ -47,7 +47,7 @@ namespace CaseStudy.WebApi
             services.AddDbContext<DataContext>(opts =>
             {
                 opts.UseSqlServer(Configuration["ConnectionStrings:DefaultConnection"]);
-                opts.EnableSensitiveDataLogging(true);
+                opts.EnableSensitiveDataLogging();
             });
             services.AddScoped<IRepository, Repository>();
 

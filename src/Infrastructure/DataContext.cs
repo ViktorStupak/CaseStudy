@@ -1,5 +1,6 @@
 ﻿using CaseStudy.WebApi.Models;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace CaseStudy.WebApi.Infrastructure
 {
@@ -15,7 +16,9 @@ namespace CaseStudy.WebApi.Infrastructure
         /// <param name="opts">The opts.</param>
         public DataContext(DbContextOptions<DataContext> opts) : base(opts)
         {
+            //this.Database.EnsureDeleted();
             this.Database.EnsureCreated();
+            Log.Debug("create DataContext ");
         }
 
         /// <summary>

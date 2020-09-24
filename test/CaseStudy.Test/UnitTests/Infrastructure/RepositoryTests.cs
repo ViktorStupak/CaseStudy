@@ -17,8 +17,8 @@ namespace CaseStudy.Test.UnitTests.Infrastructure
         public RepositoryTests()
         {
             var options = new DbContextOptionsBuilder<DataContext>()
-                .UseInMemoryDatabase(databaseName: "ProductDatabase")
-                //.EnableSensitiveDataLogging(true)
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .EnableSensitiveDataLogging()
                 .Options;
 
             this._mockDataContext = new DataContext(options);
@@ -32,7 +32,7 @@ namespace CaseStudy.Test.UnitTests.Infrastructure
         }
 
         [Fact]
-        public void GetPaginatedProductsTest()
+        public async Task GetPaginatedProductsTest()
         {
             // Arrange
             var repository = this.CreateRepository();
@@ -44,7 +44,10 @@ namespace CaseStudy.Test.UnitTests.Infrastructure
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(pageSize, result.Count);
+            var results = new List<Product>();
+            await foreach (var item in result)
+                results.Add(item);
+            Assert.Equal(pageSize, results.Count);
         }
 
         [Fact]
@@ -125,7 +128,7 @@ namespace CaseStudy.Test.UnitTests.Infrastructure
         {
             // Arrange
             var repository = this.CreateRepository();
-            long id = 10;
+            const long id = 10;
 
             // Act
             var result = await repository.ProductExists(id).ConfigureAwait(false);

@@ -47,26 +47,23 @@ namespace CaseStudy.Test.UnitTests.Controllers
         }
 
         [Fact]
-        public void GetProductsPaginatedTest()
+        public async Task GetProductsPaginatedTest()
         {
             // Arrange
             var productsController = this.CreateProductsController();
             const int pageIndex = 2;
             const int pageSize = 11;
 
-            var context = PaginatedList<Product>.CreateInstance(GetProductsPaginated(), pageIndex, pageSize);
+            IAsyncEnumerable<Product> context = GetProducts();
 
             this.mockDataContext.Setup(m => m.GetPaginatedProducts(pageIndex, pageSize)).Returns(context);
 
             // Act
             var result = productsController.GetProducts(pageIndex, pageSize);
-            var okResult = result as ObjectResult;
-            // Assert
-            Assert.NotNull(result);
-            Assert.NotNull(okResult);
-            PaginatedList<Product> paginated = okResult.Value as PaginatedList<Product>;
-            Assert.NotNull(paginated);
-            Assert.Equal(11, paginated.Count);
+            var results = new List<Product>();
+            await foreach (var item in result)
+                results.Add(item);
+            Assert.Equal(100, results.Count);
             this.mockRepository.VerifyAll();
         }
 
@@ -166,8 +163,6 @@ namespace CaseStudy.Test.UnitTests.Controllers
             this.mockRepository.VerifyAll();
         }
 
-
-
         private static async IAsyncEnumerable<Product> GetProducts()
         {
             for (int i = 1; i <= 100; i++)
@@ -179,22 +174,7 @@ namespace CaseStudy.Test.UnitTests.Controllers
                     Description = $"Description {i}",
                     ImgUri = new Uri($"http\\\\web.com\\{i}.png", UriKind.RelativeOrAbsolute)
                 };
-                yield return data;
-            }
-        }
-
-        private static IEnumerable<Product> GetProductsPaginated()
-        {
-            for (int i = 1; i <= 100; i++)
-            {
-                var data = new Product
-                {
-                    Name = $"{i} Product",
-                    Price = 275 * i + 1,
-                    Description = $"Description {i}",
-                    ImgUri = new Uri($"http\\\\web.com\\{i}.png", UriKind.RelativeOrAbsolute)
-                };
-                yield return data;
+                yield return await Task.Run(() => data).ConfigureAwait(false);
             }
         }
     }

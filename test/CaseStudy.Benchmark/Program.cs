@@ -1,12 +1,17 @@
-﻿using System;
+﻿using BenchmarkDotNet.Running;
 
 namespace CaseStudy.Benchmark
 {
-    class Program
+    public static class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            //BenchmarkRunner.Run<RepositoryTests>();
+            //BenchmarkRunner.Run<RepositoryLargeTests>();
+            BenchmarkRunner.Run<RestFullAsyncTest>();
+            BenchmarkRunner.Run<RestFullTest>();
+            BenchmarkRunner.Run<RestFullCreateTest>();
+            BenchmarkRunner.Run<RestFullCreateAsyncTest>();
         }
     }
 }
