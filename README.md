@@ -4,7 +4,7 @@ To create REST API service providing all available products of an eshop and enab
 ## Api specification (endpoints):
 > See more after start app on the [Swagger Documentation](https://localhost:55554/swagger)
 
-> See more in the [Postman's collection](Postman\CaseStudy.postman_collection.json)
+> See more in the [Postman's collection](Postman/CaseStudy.postman_collection.json)
 ### version 1
 #### All product 
 ``` bash
@@ -87,9 +87,9 @@ dotnet run -c Release
   1 ms      : 1 Millisecond (0.001 sec)
 
 ```
-* [RepositoryLargeTests](\benchmark\CaseStudy.Benchmark.RepositoryLargeTests-report-github.md)
-* [RepositoryTests](\benchmark\CaseStudy.Benchmark.RepositoryTests-report-github.md)
-* [RestFullAsyncTest](\benchmark\CaseStudy.Benchmark.RestFullAsyncTest-report-github.md)
-* [RestFullCreateAsyncTest](\benchmark\CaseStudy.Benchmark.RestFullCreateAsyncTest-report-github.md)
-* [RestFullCreateTest](\benchmark\CaseStudy.Benchmark.RestFullCreateTest-report-github.md)
-* [RestFullTest](\benchmark\CaseStudy.Benchmark.RestFullTest-report-github.md)
+* [RepositoryLargeTests](/benchmark/CaseStudy.Benchmark.RepositoryLargeTests-report-github.md)
+* [RepositoryTests](/benchmark/CaseStudy.Benchmark.RepositoryTests-report-github.md)
+* [RestFullAsyncTest](/benchmark/CaseStudy.Benchmark.RestFullAsyncTest-report-github.md)
+* [RestFullCreateAsyncTest](/benchmark/CaseStudy.Benchmark.RestFullCreateAsyncTest-report-github.md)
+* [RestFullCreateTest](/benchmark/CaseStudy.Benchmark.RestFullCreateTest-report-github.md)
+* [RestFullTest](/benchmark/CaseStudy.Benchmark.RestFullTest-report-github.md)
