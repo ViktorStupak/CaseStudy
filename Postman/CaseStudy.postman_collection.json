@@ -1,0 +1,162 @@
+{
+	"info": {
+		"_postman_id": "ccce6b80-5ab0-46f4-956c-fb203d190fa1",
+		"name": "CaseStudy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "AllProduct",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:55554/api/Products",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "55554",
+					"path": [
+						"api",
+						"Products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PaginatedProduct",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:55554/api/Products/1/10",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "55554",
+					"path": [
+						"api",
+						"Products",
+						"1",
+						"10"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Product",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:55554/api/Products/55",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "55554",
+					"path": [
+						"api",
+						"Products",
+						"55"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PutDescription",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"description\": \"Description of the product\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:55554/api/Products/description/55",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "55554",
+					"path": [
+						"api",
+						"Products",
+						"description",
+						"55"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PostProduct",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Men's basketball shoes\",\r\n  \"imgUri\": \"http\\\\\\\\test.com\",\r\n  \"price\": 10,\r\n  \"description\": \"Description of the product\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:55554/api/Products",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "55554",
+					"path": [
+						"api",
+						"Products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PutProduct",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": 58,\r\n  \"name\": \"Men's basketball shoes\",\r\n  \"imgUri\": \"http\\\\\\\\test.com\",\r\n  \"price\": 10,\r\n  \"description\": \"Description of the product\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:55554/api/Products",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "55554",
+					"path": [
+						"api",
+						"Products"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
